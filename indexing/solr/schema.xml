@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="electronics_reviews" version="1.6">
+  <fields>
+    <field name="_version_" type="plong" indexed="true" stored="true"/>
+
+    <!-- Unique Identifier -->
+    <field name="review_id" type="string" indexed="true" stored="true" required="true" />
+
+    <!-- User Rating (Float 1.0 - 5.0) -->
+    <field name="user_rating" type="pfloat" indexed="true" stored="true" />
+
+    <!-- Review Images (Multivalued String URLs) -->
+    <field name="small_image_url" type="string" indexed="false" stored="true" multiValued="true"/>
+    <field name="medium_image_url" type="string" indexed="false" stored="true" multiValued="true"/>
+    <field name="large_image_url" type="string" indexed="false" stored="true" multiValued="true"/>
+
+    <!-- Review Timestamp -->
+    <field name="review_timestamp" type="pdate" indexed="true" stored="true"/>
+
+    <!-- Helpful Votes (Integer) -->
+    <field name="number_of_helpful_votes" type="pint" indexed="true" stored="true" />
+
+    <!-- Verified Purchase (Boolean) -->
+    <field name="verified_purchase" type="boolean" indexed="true" stored="true" />
+
+    <!-- Detected Language -->
+    <field name="review_language" type="string" indexed="true" stored="true" />
+
+    <!-- Cleaned Review Text -->
+    <field name="review_text_cleaned" type="text_general" indexed="true" stored="true" />
+
+    <!-- Original Review Text -->
+    <field name="review_text_original" type="text_general" indexed="true" stored="true" />
+
+    <!-- Sentiment Labels -->
+    <field name="review_subjectivity" type="boolean" indexed="true" stored="true" />
+    <field name="review_polarity" type="pfloat" indexed="true" stored="true" />
+
+    <!-- Product Metadata -->
+    <field name="product_category" type="string" indexed="true" stored="true" />
+    <field name="product_name" type="text_general" indexed="true" stored="true" />
+    <field name="product_price_USD" type="pfloat" indexed="true" stored="true" />
+    <field name="product_store" type="string" indexed="true" stored="true" />
+    <field name="product_brand" type="string" indexed="true" stored="true" />
+    <field name="product_country_of_origin" type="string" indexed="true" stored="true" />
+
+    <!-- Dynamic Fields (If new fields appear in JSON) -->
+    <dynamicField name="*_s" type="string" indexed="true" stored="true"/>
+    <dynamicField name="*_i" type="pint" indexed="true" stored="true"/>
+    <dynamicField name="*_f" type="pfloat" indexed="true" stored="true"/>
+    <dynamicField name="*_dt" type="pdate" indexed="true" stored="true"/>
+
+    <!-- Copy Fields (For easy search) -->
+    <copyField source="review_text" dest="text"/>
+    <copyField source="product_name" dest="text"/>
+    <copyField source="product_category" dest="text"/>
+
+    <!-- Field types -->
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true"/>
+    <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+    <fieldType name="pint" class="solr.IntPointField" docValues="true"/>
+    <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>
+    <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
+    <fieldType name="pdouble" class="solr.DoublePointField" docValues="true"/>
+    <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>
+
+    <!-- Text field types -->
+  <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100" multiValued="true">
+    <analyzer type="index">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
+        <filter class="solr.EnglishPossessiveFilterFactory"/>
+        <filter class="solr.PorterStemFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
+        <filter class="solr.EnglishPossessiveFilterFactory"/>
+        <filter class="solr.PorterStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
+</schema>
